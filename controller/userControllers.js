@@ -16,7 +16,7 @@ const createUser = async (req, res) => {
       role: req.body.role,
       password: userPassword,
     };
-    // console.log("user data", userData);
+    console.log("user data", userData);
 
     const checkEmail = await User.findOne({ email: req.body.email });
     // console.log("check email", checkEmail);
@@ -70,7 +70,7 @@ const userLogin = async (req, res) => {
         if (token) {
           res.json({
             status: "success",
-            message: "logn successful",
+            message: "login successful",
             token: token,
             data: user,
           });

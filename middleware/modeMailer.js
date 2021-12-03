@@ -52,7 +52,7 @@ const mailSender = async (email, password) => {
       to: email, // list of receivers
       subject: "You are invited to our app ✔", // Subject line
       text: "You are invited to our app", // plain text body
-      html: `<b>Youre password is <h3>${password}</h3> </b>`, // html body
+      html: `<b>Your password is <h3>${password} and you can login now.</h3> </b>`, // html body
     });
 
     console.log("Message sent: %s", info.messageId);
