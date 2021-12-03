@@ -3,6 +3,25 @@ const mail = require("../middleware/modeMailer");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find();
+    if (users) {
+      res.json({
+        status: "success",
+        message: "users found successfully",
+        data: users,
+      });
+    } else {
+      res.json({
+        status: "error",
+        message: "users not found!",
+      });
+    }
+  } catch (error) {
+    console.log("errors");
+  }
+};
 
 const createUser = async (req, res) => {
   //   console.log("body request", req.body);
@@ -84,7 +103,7 @@ const userLogin = async (req, res) => {
     } else {
       res.json({
         status: "error",
-        message: "invalid email",
+        message: "user not exist",
       });
     }
   } catch (error) {
@@ -92,4 +111,24 @@ const userLogin = async (req, res) => {
   }
 };
 
-module.exports = { createUser, userLogin };
+const deleteUser = async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+
+    if (user) {
+      res.json({
+        status: "success",
+        message: "User deleted successfully",
+      });
+    } else {
+      res.json({
+        status: "error",
+        message: "user not found",
+      });
+    }
+  } catch (error) {
+    console.log("errors", error);
+  }
+};
+
+module.exports = { createUser, userLogin, deleteUser, getAllUsers };
