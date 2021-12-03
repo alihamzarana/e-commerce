@@ -101,10 +101,7 @@ const userLogin = async (req, res) => {
         });
       }
     } else {
-      res.json({
-        status: "error",
-        message: "user not exist",
-      });
+      res.status(404).send(" user Not found");
     }
   } catch (error) {
     console.log("errors", error);
