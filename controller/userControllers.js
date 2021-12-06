@@ -70,6 +70,56 @@ const createUser = async (req, res) => {
   }
 };
 
+const updateUser = async (req, res) => {
+  try {
+    const updatedData = {
+      userName: req.body.userName,
+      role: req.body.role,
+    };
+    const id = req.params.id;
+    const user = await User.findByIdAndUpdate(
+      id,
+      { ...updatedData },
+      { new: true }
+    );
+
+    if (user) {
+      res.json({
+        status: "success",
+        message: "user updated successfully",
+        data: user,
+      });
+    } else {
+      res.json({
+        status: "error",
+        message: "user not updated",
+      });
+    }
+  } catch (error) {
+    console.log("errors", error);
+  }
+};
+
+const singleUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (user) {
+      res.json({
+        status: "success",
+        message: "User found!",
+        data: user,
+      });
+    } else {
+      res.json({
+        status: "error",
+        message: "user not exists",
+      });
+    }
+  } catch (error) {
+    console.log("errors", error);
+  }
+};
+
 const userLogin = async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
@@ -101,7 +151,10 @@ const userLogin = async (req, res) => {
         });
       }
     } else {
-      res.status(404).send(" user Not found");
+      res.status(404).json({
+        status: "error",
+        message: "user not exists in database",
+      });
     }
   } catch (error) {
     console.log("errors", error);
@@ -128,4 +181,11 @@ const deleteUser = async (req, res) => {
   }
 };
 
-module.exports = { createUser, userLogin, deleteUser, getAllUsers };
+module.exports = {
+  createUser,
+  userLogin,
+  deleteUser,
+  getAllUsers,
+  singleUser,
+  updateUser,
+};

@@ -2,6 +2,9 @@ const express = require("express");
 
 const mongoose = require("mongoose");
 const userRoute = require("./routes/userRoute");
+const productRoute = require("./routes/productRoute");
+const categoryRoute = require("./routes/categoryRoute");
+
 require("dotenv").config();
 
 const app = express();
@@ -21,8 +24,12 @@ app.use(express.json());
 app.use(express.static("./public"));
 app.use(cors());
 app.use("/user", userRoute);
+app.use("/product", productRoute);
+app.use("/category", categoryRoute);
 
 app.listen(process.env.PORT || 3001);
+app.use(express.static("./public"));
+
 // console.log("DB_URI envvvv", DB_URI);
 
 mongoose
