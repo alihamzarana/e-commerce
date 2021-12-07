@@ -1,9 +1,13 @@
 const Product = require("../models/product");
 const cloudinary = require("../middleware/cloudinary");
+const productService = require("../services/productService");
 
 const allProducts = async (req, res) => {
+  // console.log("response", res)
   try {
-    const product = await Product.find().populate("categoryId");
+    // const product = await Product.find().populate("categoryId");
+    const product = await productService.findProducts();
+
     console.log("products", product);
 
     if (product) {
@@ -26,18 +30,31 @@ const allProducts = async (req, res) => {
 const createProduct = async (req, res) => {
   try {
     console.log("body request", req.body);
-    const uploadImage = req.file?.filename
-      ? await cloudinary.uploader.upload(req.file.path)
-      : null;
+    console.log("files request", req.files);
+    // const uploadImage = req.file?.filename
+    //   ? await cloudinary.uploader.upload(req.files[i].path)
+    //   : null;
+
+    let imagesUrl = [];
+
+    for (let i = 0; i < req.files?.length; i++) {
+      let result = await cloudinary.uploader.upload(req.files[i].path);
+      console.log("result of uploaded images", result);
+      imagesUrl.push(result.secure_url);
+    }
+    console.log("list of urls", imagesUrl);
+
     const addProduct = {
       title: req.body.title,
       description: req.body.description,
       price: req.body.price,
       categoryId: req.body.categoryId,
-      image: uploadImage?.url,
+      image: imagesUrl ? imagesUrl : [],
     };
 
-    const data = await Product.create(addProduct);
+    // const data = await Product.create(addProduct);
+    const data = await productService.createProduct(addProduct);
+
     console.log("created product", data);
 
     if (data) {

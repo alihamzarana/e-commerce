@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const userRoute = require("./routes/userRoute");
 const productRoute = require("./routes/productRoute");
 const categoryRoute = require("./routes/categoryRoute");
+const subCategoryRoute = require("./routes/subCategoryRoute");
 
 require("dotenv").config();
 
@@ -26,6 +27,7 @@ app.use(cors());
 app.use("/user", userRoute);
 app.use("/product", productRoute);
 app.use("/category", categoryRoute);
+app.use("/subCategory", subCategoryRoute);
 
 app.listen(process.env.PORT || 3001);
 app.use(express.static("./public"));

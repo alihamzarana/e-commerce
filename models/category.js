@@ -18,10 +18,6 @@ const categorySchema = new Schema(
 
     subCategory: [
       {
-        // Categoryid: {
-        //   type: mongoose.Schema.Types.ObjectId,
-        //   ref: "Category",
-        // },
         title: {
           type: String,
           required: true,

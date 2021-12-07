@@ -4,7 +4,9 @@ const categoryService = require("../services/categoryService");
 
 const allCategories = async (req, res) => {
   try {
-    const categories = await Category.find();
+    // const categories = await Category.find();
+    const categories = await categoryService.findCategories();
+
     if (categories) {
       res.json({
         status: "success",
@@ -24,20 +26,23 @@ const allCategories = async (req, res) => {
 
 const createCategory = async (req, res) => {
   try {
+    console.log("body request", req.body);
     const uploadImage = req.file?.filename
       ? await cloudinary.uploader.upload(req.file.path)
       : null;
+
+    console.log("uploaded image", uploadImage);
     const categoryData = {
       title: req.body.title,
       description: req.body.description,
-      image: uploadImage?.url,
-      subCategory: req.body.subCategory
-       
+      image: uploadImage?.secure_url,
     };
-    console.log("body request", req.body);
+
     // console.log("sub category", req.body.subCategory)
-    const result = await Category.create(categoryData);
-    console.log("creted category", result);
+    // const result = await Category.create(categoryData);
+    const category = await categoryService.addCategory(categoryData);
+
+    console.log("creted category", category);
 
     // const data = await Category.updateOne(
     //   { _id: result._id },
@@ -45,11 +50,11 @@ const createCategory = async (req, res) => {
     // );
     // console.log("sub category data",data);
 
-    if (result) {
+    if (category) {
       res.json({
         status: "success",
         message: "category created successfully",
-        data: result,
+        data: category,
       });
     } else {
       res.json({
@@ -62,32 +67,46 @@ const createCategory = async (req, res) => {
   }
 };
 
-const createSubCategory = async (req, res) => {
+const updateCategory = async (req, res) => {
   try {
+    console.log("body request", req.body);
     const uploadImage = req.file?.filename
       ? await cloudinary.uploader.upload(req.file.path)
       : null;
+
+    console.log("uploaded image", uploadImage);
     const categoryData = {
       title: req.body.title,
       description: req.body.description,
-      image: uploadImage?.url,
-      subCategory: req.body.subCategory,
+      image: uploadImage?.secure_url,
     };
-    console.log("category data", categoryData);
-    const result = await Category.create(categoryData);
-    //  console.log("creted category", result);
+    if (categoryData.image == null) {
+      delete categoryData.image;
+    }
+
+    // console.log("sub category", req.body.subCategory)
+    // const updatedCategory = await Category.findByIdAndUpdate(
+    //   id,
+    //   { ...categoryData },
+    //   { new: true }
+    // );
+    const updatedCategory = await categoryService.editCategory(
+      req.params.id,
+      categoryData
+    );
+    console.log("creted category", updatedCategory);
 
     // const data = await Category.updateOne(
     //   { _id: result._id },
-    //   { $push: { subCategory:  } }
+    //   { $push: { subCategory: categoryData } }
     // );
-    // console.log("sub category data", data);
+    // console.log("sub category data",data);
 
-    if (result) {
+    if (updatedCategory) {
       res.json({
         status: "success",
         message: "category created successfully",
-        data: result,
+        data: updatedCategory,
       });
     } else {
       res.json({
@@ -96,7 +115,7 @@ const createSubCategory = async (req, res) => {
       });
     }
   } catch (error) {
-    consle.log("errors", error);
+    console.log("errors", error);
   }
 };
 
@@ -120,34 +139,11 @@ const deleteCategory = async (req, res) => {
   }
 };
 
-const deleteSubCategory = async (req, res) => {
-  try {
-    const category = await Category.findById(req.params.id);
-    // const data = await User.updateOne(
-    //   { _id: category._id },
-    //   { $pull: { subCategory:  } }
-    // );
-    if (category) {
-      res.json({
-        status: "success",
-        message: "category deleted successfully",
-      });
-    } else {
-      res.json({
-        status: "error",
-        message: "category not deleted",
-      });
-    }
-  } catch (error) {
-    console.log("errors", error);
-  }
-};
-
 module.exports = {
   createCategory,
   deleteCategory,
   allCategories,
-  createSubCategory,
+  updateCategory,
 };
 //    subCategory: req.body?.subCategory[1]
 //         ? { ...req.body.subCategory, image: uploadImage?.url }
