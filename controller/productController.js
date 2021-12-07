@@ -71,7 +71,9 @@ const createProduct = async (req, res) => {
 
 const deleteProduct = async (req, res) => {
   try {
-    const product = await Product.findByIdAndDelete(req.params.id);
+    // const product = await Product.findByIdAndDelete(req.params.id);
+    const product = await productService.removeProduct(req.params.id);
+
     if (product) {
       res.json({
         status: "success",
@@ -90,29 +92,31 @@ const deleteProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
   try {
-    const uploadImage = req.file?.filename
-      ? await cloudinary.uploader.upload(req.file.path)
-      : null;
-    const updatedData = {
+    let imagesUrl = [];
+
+    for (let i = 0; i < req.files?.length; i++) {
+      let result = await cloudinary.uploader.upload(req.files[i].path);
+      console.log("result of uploaded images", result);
+      imagesUrl.push(result.secure_url);
+    }
+    console.log("list of urls", imagesUrl);
+
+    const updateData = {
       title: req.body.title,
       description: req.body.description,
       price: req.body.price,
       categoryId: req.body.categoryId,
-      image: uploadImage?.url,
+      image: imagesUrl ? imagesUrl : [],
     };
-    console.log("updated data of product", updatedData);
+    // console.log("updated data of product", updatedData);
 
     const id = req.params.id;
 
-    if (updatedData.image == null) {
-      delete updatedData.image;
+    if (updateData.image == null) {
+      delete updateData.image;
     }
 
-    const product = await Product.findByIdAndUpdate(
-      id,
-      { ...updatedData },
-      { new: true }
-    );
+    const product = await productService.editProduct(id, updateData);
     if (product) {
       res.json({
         status: "success",
@@ -132,7 +136,9 @@ const updateProduct = async (req, res) => {
 
 const singleProduct = async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
+    // const product = await Product.findById(req.params.id);
+    const product = await productService.singleProduct(req.params.id);
+
     if (product) {
       res.json({
         status: "success",

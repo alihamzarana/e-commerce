@@ -12,7 +12,24 @@ const createProduct = async (productData) => {
 };
 
 const editProduct = async (id, productData) => {
-  const updtedProduct = await Product.findByIdAndUpdate(id, { ...productData });
+  console.log("product data", productData);
+  const updtedProduct = await Product.findByIdAndUpdate(id, { ...productData }, {new: true});
   return updtedProduct;
 };
-module.exports = { findProducts, createProduct, editProduct };
+
+const removeProduct = async (id) => {
+  const product = await Product.findByIdAndDelete(id);
+  return product;
+};
+
+const singleProduct = async (id) => {
+  const product = await Product.findById(id);
+  return product;
+};
+module.exports = {
+  findProducts,
+  createProduct,
+  editProduct,
+  removeProduct,
+  singleProduct,
+};
