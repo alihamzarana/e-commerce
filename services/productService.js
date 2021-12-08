@@ -13,7 +13,11 @@ const createProduct = async (productData) => {
 
 const editProduct = async (id, productData) => {
   console.log("product data", productData);
-  const updtedProduct = await Product.findByIdAndUpdate(id, { ...productData }, {new: true});
+  const updtedProduct = await Product.findByIdAndUpdate(
+    id,
+    { ...productData },
+    { new: true }
+  );
   return updtedProduct;
 };
 

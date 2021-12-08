@@ -2,10 +2,13 @@ const User = require("../models/user");
 const mail = require("../middleware/modeMailer");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const userService = require("../services/userService");
 
 const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find();
+    // const users = await User.find();
+    const users = await userService.allUsers();
+
     if (users) {
       res.json({
         status: "success",
@@ -19,7 +22,7 @@ const getAllUsers = async (req, res) => {
       });
     }
   } catch (error) {
-    console.log("errors");
+    console.log("errors", error);
   }
 };
 
@@ -37,8 +40,10 @@ const createUser = async (req, res) => {
     };
     console.log("user data", userData);
 
-    const checkEmail = await User.findOne({ email: req.body.email });
-    // console.log("check email", checkEmail);
+    // const checkEmail = await User.findOne({ email: req.body.email });
+    const checkEmail = await userService.findUser({ email: req.body.email });
+
+    console.log("check email", checkEmail);
     if (checkEmail) {
       res.json({
         status: "error",
@@ -47,8 +52,7 @@ const createUser = async (req, res) => {
     } else {
       const userEmail = req.body.email;
       console.log("user email is", userEmail);
-      const user = await new User(userData);
-      const data = await user.save();
+      const data = await userService.createUser(userData);
 
       const result = await mail.mailSender(userEmail, userPassword);
 
@@ -77,11 +81,13 @@ const updateUser = async (req, res) => {
       role: req.body.role,
     };
     const id = req.params.id;
-    const user = await User.findByIdAndUpdate(
-      id,
-      { ...updatedData },
-      { new: true }
-    );
+    // const user = await User.findByIdAndUpdate(
+    //   id,
+    //   { ...updatedData },
+    //   { new: true }
+    // );
+
+    const user = await userService.editUser(id, updatedData);
 
     if (user) {
       res.json({
@@ -102,7 +108,9 @@ const updateUser = async (req, res) => {
 
 const singleUser = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
+    // const user = await User.findById(req.params.id);
+    const user = await userService.singleUser(req.params.id);
+
     if (user) {
       res.json({
         status: "success",
@@ -122,7 +130,7 @@ const singleUser = async (req, res) => {
 
 const userLogin = async (req, res) => {
   try {
-    const user = await User.findOne({ email: req.body.email });
+    const user = await userService.findUser({ email: req.body.email });
     console.log("user is", user);
 
     if (user) {
@@ -163,7 +171,8 @@ const userLogin = async (req, res) => {
 
 const deleteUser = async (req, res) => {
   try {
-    const user = await User.findByIdAndDelete(req.params.id);
+    // const user = await User.findByIdAndDelete(req.params.id);
+    const user = await userService.removeUser(req.params.id);
 
     if (user) {
       res.json({

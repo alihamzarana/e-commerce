@@ -27,6 +27,11 @@ const editCategory = async (id, categoryData) => {
   );
   return category;
 };
+
+const getSingleCategory = async (id) => {
+  const category = await Category.findById(id);
+  return category;
+};
 // const saveCategory = async (categoryId) => {
 //   const data = await Category.updateOne(
 //     { _id: categoryId },
@@ -35,4 +40,10 @@ const editCategory = async (id, categoryData) => {
 //   return data;
 // };
 
-module.exports = { addCategory, findCategories, removeCategory, editCategory };
+module.exports = {
+  addCategory,
+  findCategories,
+  removeCategory,
+  editCategory,
+  getSingleCategory,
+};

@@ -27,15 +27,25 @@ const allCategories = async (req, res) => {
 const createCategory = async (req, res) => {
   try {
     console.log("body request", req.body);
-    const uploadImage = req.file?.filename
-      ? await cloudinary.uploader.upload(req.file.path)
-      : null;
+    console.log("files request", req.files);
+    // console.log("body request", req.body);
+    // const uploadImage = req.file?.filename
+    //   ? await cloudinary.uploader.upload(req.file.path)
+    //   : null;
+    let imagesUrl = [];
 
-    console.log("uploaded image", uploadImage);
+    for (let i = 0; i < req.files?.length; i++) {
+      let result = await cloudinary.uploader.upload(req.files[i].path);
+      console.log("result of uploaded images", result);
+      imagesUrl.push(result.secure_url);
+    }
+    console.log("list of urls", imagesUrl);
+
+    // console.log("uploaded image", uploadImage);
     const categoryData = {
       title: req.body.title,
       description: req.body.description,
-      image: uploadImage?.secure_url,
+      image: imagesUrl ? imagesUrl : [],
     };
 
     // console.log("sub category", req.body.subCategory)
@@ -119,6 +129,28 @@ const updateCategory = async (req, res) => {
   }
 };
 
+const singleCategory = async (req, res) => {
+  try {
+    console.log("id for single category", req.params.id);
+    const category = await categoryService.getSingleCategory(req.params.id);
+
+    if (category) {
+      res.json({
+        status: "success",
+        message: "category found successfully",
+        data: category,
+      });
+    } else {
+      res.json({
+        status: "error",
+        message: "category not found",
+      });
+    }
+  } catch (error) {
+    console.log("errors", error);
+  }
+};
+
 const deleteCategory = async (req, res) => {
   try {
     const category = await Category.findByIdAndDelete(req.params.id);
@@ -144,6 +176,7 @@ module.exports = {
   deleteCategory,
   allCategories,
   updateCategory,
+  singleCategory,
 };
 //    subCategory: req.body?.subCategory[1]
 //         ? { ...req.body.subCategory, image: uploadImage?.url }

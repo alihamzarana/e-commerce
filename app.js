@@ -1,20 +1,23 @@
 const express = require("express");
-
+// const config = require("./config");
 const mongoose = require("mongoose");
 const userRoute = require("./routes/userRoute");
 const productRoute = require("./routes/productRoute");
 const categoryRoute = require("./routes/categoryRoute");
 const subCategoryRoute = require("./routes/subCategoryRoute");
 
-require("dotenv").config();
+require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` });
 
 const app = express();
 const cors = require("cors");
 // const PORT = 3001;
 // const DB_URI =
 //   "mongodb+srv://user:64CNzQ1lWN5BLtiT@node.8jzbu.mongodb.net/e-commerce?retryWrites=true&w=majority";
+// const DB_URI = "mongodb://localhost:27017/e-commerce";
 
 // console.log("port env", PORT);
+console.log(`NODE_ENV=${process.env.NODE_ENV}`);
+console.log(`DB_URI=${process.env.DB_URI}`);
 
 app.use(
   express.urlencoded({
@@ -31,6 +34,9 @@ app.use("/subCategory", subCategoryRoute);
 
 app.listen(process.env.PORT || 3001);
 app.use(express.static("./public"));
+// app.listen(process.env.PORT, process.env.HOST, () => {
+//   console.log(`APP LISTENING ON http://${process.env.HOST}:${process.env.PORT}`);
+// });
 
 // console.log("DB_URI envvvv", DB_URI);
 
