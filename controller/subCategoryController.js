@@ -3,13 +3,19 @@ const cloudinary = require("../middleware/cloudinary");
 
 const createSubCategory = async (req, res) => {
   try {
-    const id = req.params.id;
-    const uploadImage = req.file?.filename
-      ? await cloudinary.uploader.upload(req.file.path)
-      : null;
+    let imagesUrl = [];
+
+    for (let i = 0; i < req.files?.length; i++) {
+      let result = await cloudinary.uploader.upload(req.files[i].path);
+      console.log("result of uploaded images", result);
+      imagesUrl.push(result.secure_url);
+    }
+    console.log("list of urls", imagesUrl);
+
+    // console.log("uploaded image", uploadImage);
     const categoryData = {
       title: req.body.title,
-      image: uploadImage?.url,
+      image: imagesUrl ? imagesUrl : [],
     };
 
     // console.log("sub category", req.body.subCategory)

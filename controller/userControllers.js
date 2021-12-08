@@ -27,7 +27,7 @@ const getAllUsers = async (req, res) => {
 };
 
 const createUser = async (req, res) => {
-  //   console.log("body request", req.body);
+    console.log("body request", req.body);
   try {
     const userPassword = Math.floor(100000 + Math.random() * 900000);
     console.log("userPassword", userPassword);
