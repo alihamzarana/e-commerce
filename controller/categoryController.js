@@ -91,7 +91,7 @@ const updateCategory = async (req, res) => {
     }
     console.log("list of urls", imagesUrl);
 
-    console.log("uploaded image", uploadImage);
+    // console.log("uploaded image", uploadImage);
     const categoryData = {
       title: req.body.title,
       description: req.body.description,
