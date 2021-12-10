@@ -1,4 +1,4 @@
-const User = require("../models/user");
+// const User = require("../models/user");
 const mail = require("../middleware/modeMailer");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -140,7 +140,8 @@ const userLogin = async (req, res) => {
 
       if (isValid) {
         const payLoad = {
-          _id: user._id,
+          // _id: user._id,
+          role: user.role
         };
 
         const token = await jwt.sign({ payLoad }, "secretkey");

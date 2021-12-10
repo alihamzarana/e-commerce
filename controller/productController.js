@@ -1,4 +1,5 @@
 const Product = require("../models/product");
+const Category = require("../models/category");
 const cloudinary = require("../middleware/cloudinary");
 const productService = require("../services/productService");
 
@@ -156,10 +157,34 @@ const singleProduct = async (req, res) => {
   }
 };
 
+const categoryBasedProduct = async (req, res) => {
+  try {
+    console.log("query parameter", req.query);
+    const product = await Product.find({ categoryId: req.query.categoryId });
+    console.log("product", product);
+
+    if (product) {
+      res.json({
+        status: "success",
+        message: "products found based on its category!",
+        data: product,
+      });
+    } else {
+      res.json({
+        status: "error",
+        message: "not found any product",
+      });
+    }
+  } catch (error) {
+    console.log("errors", error);
+  }
+};
+
 module.exports = {
   createProduct,
   deleteProduct,
   updateProduct,
   singleProduct,
   allProducts,
+  categoryBasedProduct,
 };

@@ -1,11 +1,12 @@
 const Category = require("../models/category");
-const cloudinary = require("../middleware/cloudinary");
 const categoryService = require("../services/categoryService");
+const utils = require("../utils/fileUpload");
 
 const allCategories = async (req, res) => {
   try {
     // const categories = await Category.find();
     const categories = await categoryService.findCategories();
+    console.log("all categories found", categories);
 
     if (categories) {
       res.json({
@@ -32,14 +33,7 @@ const createCategory = async (req, res) => {
     // const uploadImage = req.file?.filename
     //   ? await cloudinary.uploader.upload(req.file.path)
     //   : null;
-    let imagesUrl = [];
-
-    for (let i = 0; i < req.files?.length; i++) {
-      let result = await cloudinary.uploader.upload(req.files[i].path);
-      console.log("result of uploaded images", result);
-      imagesUrl.push(result.secure_url);
-    }
-    console.log("list of urls", imagesUrl);
+    const imagesUrl = await utils.imageUploader(req.files);
 
     // console.log("uploaded image", uploadImage);
     const categoryData = {
@@ -82,14 +76,7 @@ const updateCategory = async (req, res) => {
     console.log("body request", req.body);
     console.log("files request", req.files);
 
-    let imagesUrl = [];
-
-    for (let i = 0; i < req.files?.length; i++) {
-      let result = await cloudinary.uploader.upload(req.files[i].path);
-      console.log("result of uploaded images", result);
-      imagesUrl.push(result.secure_url);
-    }
-    console.log("list of urls", imagesUrl);
+    const imagesUrl = await utils.imageUploader(req.files);
 
     // console.log("uploaded image", uploadImage);
     const categoryData = {
@@ -178,13 +165,131 @@ const deleteCategory = async (req, res) => {
   }
 };
 
+const createSubCategory = async (req, res) => {
+  try {
+    const imagesUrl = await utils.imageUploader(req.files);
+
+    // console.log("uploaded image", uploadImage);
+    const categoryData = {
+      title: req.body.title,
+      image: imagesUrl ? imagesUrl : [],
+    };
+
+    // console.log("sub category", req.body.subCategory)
+    const result = await Category.findByIdAndUpdate(
+      { _id: req.params.id },
+      { $push: { subCategory: categoryData } }
+    );
+    console.log("created sub category", result);
+
+    if (result) {
+      res.json({
+        status: "success",
+        message: "subCategory created successfully",
+        data: result,
+      });
+    } else {
+      res.json({
+        status: "error",
+        message: "category not created",
+      });
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
+const editSubCategory = async (req, res) => {
+  try {
+    console.log("query request", req.query);
+    console.log("params request", req.params);
+    console.log("body request", req.body);
+
+    const imagesUrl = await utils.imageUploader(req.files);
+
+    console.log("list of urls in category", imagesUrl);
+
+    const updatedSubCategoryData = {
+      title: req.body.title,
+      image: imagesUrl ? imagesUrl : [],
+    };
+    let category = await Category.findOne({ _id: req.params.id });
+    category = category.toObject();
+    const id = req.query.id;
+    console.log("sub category id", id);
+
+    let newArray = [];
+    newArray = category.subCategory.map((item) => {
+      console.log("item._id", item._id == id);
+      return item._id == id ? { ...item, ...updatedSubCategoryData } : item;
+    });
+    console.log("is data updating?", {
+      ...subCategory,
+      ...updatedSubCategoryData,
+    });
+
+    console.log("new array is", newArray);
+
+    const result = await Category.findByIdAndUpdate(
+      { _id: req.params.id },
+      { subCategory: newArray },
+      { new: true }
+    );
+    console.log("result ", result);
+
+    if (result) {
+      res.json({
+        status: "success",
+        message: "subCategory created successfully",
+        data: result,
+      });
+    } else {
+      res.json({
+        status: "error",
+        message: "category not created",
+      });
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
+const deleteSubCategory = async (req, res) => {
+  try {
+    const id = req.query.subCategory;
+    console.log("query parameter", req.query.subCategory);
+    const paramsId = req.params.id;
+    console.log("params id", paramsId);
+
+    const result = await Category.findByIdAndUpdate(
+      { _id: req.params.id },
+      { $pull: { subCategory: { _id: id } } }
+    );
+    console.log("deleted sub category", result);
+
+    if (result) {
+      res.json({
+        status: "success",
+        message: "subCategory deleted successfully",
+      });
+    } else {
+      res.json({
+        status: "error",
+        message: "Subcategory not deleted",
+      });
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   createCategory,
   deleteCategory,
   allCategories,
   updateCategory,
   singleCategory,
+  createSubCategory,
+  editSubCategory,
+  deleteSubCategory,
 };
-//    subCategory: req.body?.subCategory[1]
-//         ? { ...req.body.subCategory, image: uploadImage?.url }
-//         : req.body.subCategory,
