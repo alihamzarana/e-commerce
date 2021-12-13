@@ -113,7 +113,7 @@ const updateProduct = async (req, res) => {
 
     const id = req.params.id;
 
-    if (updateData.image == null) {
+    if (updateData.image == []) {
       delete updateData.image;
     }
 

@@ -1,6 +1,7 @@
 const Category = require("../models/category");
 const categoryService = require("../services/categoryService");
 const utils = require("../utils/fileUpload");
+const cloudinary = require("../middleware/cloudinary");
 
 const allCategories = async (req, res) => {
   try {
@@ -109,7 +110,7 @@ const updateCategory = async (req, res) => {
     if (updatedCategory) {
       res.json({
         status: "success",
-        message: "category created successfully",
+        message: "category updated successfully",
         data: updatedCategory,
       });
     } else {
@@ -167,15 +168,20 @@ const deleteCategory = async (req, res) => {
 
 const createSubCategory = async (req, res) => {
   try {
-    const imagesUrl = await utils.imageUploader(req.files);
+    console.log("sub category", req.body);
+    console.log("image request", req.file);
+    // const imagesUrl = await utils.imageUploader(req.files);
+    const uploadImage = req.file?.filename
+      ? await cloudinary.uploader.upload(req.file.path)
+      : null;
 
-    // console.log("uploaded image", uploadImage);
+    console.log("uploaded image", uploadImage);
     const categoryData = {
       title: req.body.title,
-      image: imagesUrl ? imagesUrl : [],
+      description: req.body.description,
+      image: uploadImage?.url ? uploadImage.url : null,
     };
 
-    // console.log("sub category", req.body.subCategory)
     const result = await Category.findByIdAndUpdate(
       { _id: req.params.id },
       { $push: { subCategory: categoryData } }
@@ -204,15 +210,19 @@ const editSubCategory = async (req, res) => {
     console.log("query request", req.query);
     console.log("params request", req.params);
     console.log("body request", req.body);
+    console.log("image request", req.file);
+    // const imagesUrl = await utils.imageUploader(req.files);
+    const uploadImage = req.file?.filename
+      ? await cloudinary.uploader.upload(req.file.path)
+      : null;
 
-    const imagesUrl = await utils.imageUploader(req.files);
-
-    console.log("list of urls in category", imagesUrl);
-
-    const updatedSubCategoryData = {
+    console.log("uploaded image", uploadImage);
+    const categoryData = {
       title: req.body.title,
-      image: imagesUrl ? imagesUrl : [],
+      description: req.body.description,
+      image: uploadImage?.url ? uploadImage.url : null,
     };
+
     let category = await Category.findOne({ _id: req.params.id });
     category = category.toObject();
     const id = req.query.id;
@@ -223,10 +233,10 @@ const editSubCategory = async (req, res) => {
       console.log("item._id", item._id == id);
       return item._id == id ? { ...item, ...updatedSubCategoryData } : item;
     });
-    console.log("is data updating?", {
-      ...subCategory,
-      ...updatedSubCategoryData,
-    });
+    // console.log("is data updating?", {
+    //   ...subCategory,
+    //   ...updatedSubCategoryData,
+    // });
 
     console.log("new array is", newArray);
 
@@ -275,7 +285,7 @@ const deleteSubCategory = async (req, res) => {
     } else {
       res.json({
         status: "error",
-        message: "Subcategory not deleted",
+        message: "Subcategory not exist",
       });
     }
   } catch (error) {

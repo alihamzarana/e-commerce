@@ -1,32 +1,75 @@
 const express = require("express");
 const router = express.Router();
-const image = require("../middleware/multer");
-const auth = require("../middleware/auth");
-
+// const image = require("../middleware/multer");
+// const auth = require("../middleware/auth");
+const middleware = require("../middleware/middleware");
 const productController = require("../controller/productController");
 const categoryController = require("../controller/categoryController");
 
-
-router.post("/", image.upload, productController.createProduct);
-router.get("/", productController.allProducts);
-router.post("/", image.upload, categoryController.createCategory);
-router.get("/", auth.authenticate, categoryController.allCategories);
-router.get("/category", productController.categoryBasedProduct);
-router.delete("/:id", productController.deleteProduct);
-router.get("/:id", productController.singleProduct);
-router.put("/:id", image.upload, productController.updateProduct);
-router.get("/:id", categoryController.singleCategory);
-router.delete("/:id", categoryController.deleteCategory);
-router.put("/:id", image.upload, categoryController.updateCategory);
-router.delete("/:id", categoryController.deleteSubCategory);
-router.put(
-  "/subcategory/:id",
-  image.upload,
-  categoryController.createSubCategory
+router.post(
+  "/product",
+  [middleware.authenticate, middleware.upload],
+  productController.createProduct
+);
+router.get("/product", middleware.authenticate, productController.allProducts);
+router.post(
+  "/category",
+  [middleware.authenticate, middleware.upload],
+  categoryController.createCategory
+);
+router.get(
+  "/category",
+  middleware.authenticate,
+  categoryController.allCategories
+);
+router.get(
+  "/product/category",
+  middleware.authenticate,
+  productController.categoryBasedProduct
+);
+router.delete(
+  "/product/:id",
+  middleware.authenticate,
+  productController.deleteProduct
+);
+router.get(
+  "/product/:id",
+  middleware.authenticate,
+  productController.singleProduct
 );
 router.put(
-  "/:id/subcategory",
-  image.upload,
+  "/product/:id",
+  [middleware.authenticate, middleware.upload],
+  productController.updateProduct
+);
+router.get(
+  "/category/:id",
+  middleware.authenticate,
+  categoryController.singleCategory
+);
+router.delete(
+  "/category/:id",
+  middleware.authenticate,
+  categoryController.deleteCategory
+);
+router.put(
+  "/category/:id",
+  [middleware.authenticate, middleware.upload],
+  categoryController.updateCategory
+);
+router.put(
+  "/category/subcategory/:id",
+  [middleware.authenticate, middleware.singleUpload],
+  categoryController.createSubCategory
+);
+router.delete(
+  "/category/subcategory/:id",
+  middleware.authenticate,
+  categoryController.deleteSubCategory
+);
+router.put(
+  "/category/subcategory/update/:id",
+  [middleware.authenticate, middleware.singleUpload],
   categoryController.editSubCategory
 );
 
