@@ -181,6 +181,7 @@ const createSubCategory = async (req, res) => {
       description: req.body.description,
       image: uploadImage?.url ? uploadImage.url : null,
     };
+    console.log("category data", categoryData);
 
     const result = await Category.findByIdAndUpdate(
       { _id: req.params.id },
