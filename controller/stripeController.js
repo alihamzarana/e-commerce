@@ -79,12 +79,17 @@ const chargeCustomerThroughToken = async (req, res) => {
 
 const createToken = async (req, res) => {
   try {
+    console.log(" body request of create token", req.body)
     const token = await stripe.tokens.create({
       card: {
-        number: "4242424242424242",
-        exp_month: 12,
-        exp_year: 2022,
-        cvc: "314",
+        // number: "5555555555554444",
+        // exp_month: 12,
+        // exp_year: 2022,
+        // cvc: "314",
+        number: req.body.number,
+        exp_month: req.body.exp_month,
+        exp_year: req.body.exp_year,
+        cvc: req.body.cvc,
       },
     });
     console.log("token is", token);
@@ -106,12 +111,10 @@ const createToken = async (req, res) => {
 const createCustomer = async (req, res) => {
   try {
     const customer = await stripe.customers.create({
-      email: "testing@gmail.com",
-      // name: "testing user",
-      phone: "123 456 789",
-      // address: "Lahore, Pakistan",
-      source: "tok_1K6dq2Lx8iksN6sA7PJJioXG",
-      description: "My First Test Customer (created for API docs)",
+      email: req.body.email,
+      phone: req.body.phone,
+      source: req.body.source,
+      description: req.body.description,
     });
     if (customer) {
       res.status(200).json({
@@ -134,11 +137,13 @@ const retrieveCustomer = async (req, res) => {
     if (customer) {
       res.status(200).json({
         status: "success",
+        messsge: "cusomer found successfully",
         token: customer,
       });
     } else {
       res.status(500).json({
         status: "error",
+        message: "customer not found",
       });
     }
   } catch (error) {
@@ -146,10 +151,58 @@ const retrieveCustomer = async (req, res) => {
   }
 };
 
+const createProduct = async (req, res) => {
+  try {
+    const product = await stripe.products.create({
+      name: "Blue Jeans",
+      description: "Levis orginal jean",
+    });
+
+    if (product) {
+      res.json({
+        status: "success",
+        messsage: product,
+      });
+    } else {
+      res.json({
+        status: "error",
+        message: "product not created",
+      });
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
+const createPrice = async (req, res) => {
+  try {
+    const price = await stripe.prices.create({
+      unit_amount: 3850,
+      currency: "usd",
+      recurring: { interval: "month" },
+      product: "prod_KmS5g6zogxig06",
+    });
+
+    if (price) {
+      res.json({
+        status: "success",
+        data: price,
+      });
+    } else {
+      res.json({
+        status: "error",
+      });
+    }
+  } catch (error) {
+    console.log("errors", error);
+  }
+};
 module.exports = {
   checkOutToken,
   createToken,
   chargeCustomerThroughToken,
   createCustomer,
   retrieveCustomer,
+  createProduct,
+  createPrice,
 };

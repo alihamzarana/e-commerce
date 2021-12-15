@@ -1,6 +1,7 @@
 const Product = require("../models/product");
 const cloudinary = require("../middleware/cloudinary");
 const productService = require("../services/productService");
+const utils = require("../utils/fileUpload");
 
 const allProducts = async (req, res) => {
   // console.log("response", res)
@@ -35,13 +36,15 @@ const createProduct = async (req, res) => {
     //   ? await cloudinary.uploader.upload(req.files[i].path)
     //   : null;
 
-    let imagesUrl = [];
+    // let imagesUrl = [];
 
-    for (let i = 0; i < req.files?.length; i++) {
-      let result = await cloudinary.uploader.upload(req.files[i].path);
-      console.log("result of uploaded images", result);
-      imagesUrl.push(result.secure_url);
-    }
+    // for (let i = 0; i < req.files?.length; i++) {
+    //   let result = await cloudinary.uploader.upload(req.files[i].path);
+    //   console.log("result of uploaded images", result);
+    //   imagesUrl.push(result.secure_url);
+    // }
+    const imagesUrl = await utils.imageUploader(req.files);
+
     console.log("list of urls", imagesUrl);
 
     const addProduct = {
@@ -92,21 +95,40 @@ const deleteProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
   try {
+    console.log("udate product body request", req.body);
+    console.log("images in update product", req.files);
+    // let urlOfFiles = [];
     let imagesUrl = [];
 
-    for (let i = 0; i < req.files?.length; i++) {
-      let result = await cloudinary.uploader.upload(req.files[i].path);
-      console.log("result of uploaded images", result);
-      imagesUrl.push(result.secure_url);
-    }
-    console.log("list of urls", imagesUrl);
+    let image = req.body.image;
+    console.log("images are", image);
+    // for (let x = 0; x < image.length; x++) {
+
+    // }
+    image.forEach((elem) => {
+      if (elem.startsWith("https")) {
+        imagesUrl.push(elem);
+      }
+    });
+    console.log("images url are", imagesUrl);
+
+    // for (let i = 0; i < req.files?.length; i++) {
+    //   let result = await cloudinary.uploader.upload(req.files[i].path);
+    //   console.log("result of uploaded images", result);
+    //   urlOfFiles.push(result.secure_url);
+    // }
+    const urlOfFiles = await utils.imageUploader(req.files);
+
+    console.log("list of urls", urlOfFiles);
+    let arrayUrls = urlOfFiles.concat(imagesUrl);
+    console.log("concatUrls", arrayUrls);
 
     const updateData = {
       title: req.body.title,
       description: req.body.description,
       price: req.body.price,
       categoryId: req.body.categoryId,
-      image: imagesUrl ? imagesUrl : [],
+      image: arrayUrls ? arrayUrls : [],
     };
     // console.log("updated data of product", updatedData);
 
@@ -115,6 +137,7 @@ const updateProduct = async (req, res) => {
     if (updateData.image == []) {
       delete updateData.image;
     }
+    // return;
 
     const product = await productService.editProduct(id, updateData);
     if (product) {
