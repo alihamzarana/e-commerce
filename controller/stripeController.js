@@ -56,10 +56,14 @@ const checkOutToken = async (req, res) => {
 const chargeCustomerThroughToken = async (req, res) => {
   try {
     const charge = await stripe.charges.create({
-      amount: 2000,
-      currency: "usd",
-      source: "tok_1K6cSuLx8iksN6sApPDGYkUs",
-      description: "My First Test Charge (created for API docs)",
+      // amount: 2000,
+      // currency: "usd",
+      // source: "tok_1K6cSuLx8iksN6sApPDGYkUs",
+      // description: "My First Test Charge (created for API docs)",
+      amount: +req.body.amount,
+      currency: req.body.currency,
+      source: req.body.source,
+      description: req.body.descrition,
     });
     console.log("charges are", charge);
     if (charge) {
@@ -79,19 +83,20 @@ const chargeCustomerThroughToken = async (req, res) => {
 
 const createToken = async (req, res) => {
   try {
-    console.log(" body request of create token", req.body)
+    console.log(" body request of create token", req.body);
     const token = await stripe.tokens.create({
       card: {
         // number: "5555555555554444",
         // exp_month: 12,
         // exp_year: 2022,
         // cvc: "314",
-        number: req.body.number,
-        exp_month: req.body.exp_month,
-        exp_year: req.body.exp_year,
+        number: req.body.card.number,
+        exp_month: +req.body.card.exp_month,
+        exp_year: +req.body.card.exp_year,
         cvc: req.body.cvc,
       },
     });
+    console.log("card properties are", token.card);
     console.log("token is", token);
     if (token) {
       res.status(200).json({

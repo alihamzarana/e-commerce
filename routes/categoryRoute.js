@@ -6,7 +6,7 @@ const middleware = require("../middleware/middleware");
 
 const categoryController = require("../controller/categoryController");
 
-router.post("/", middleware.upload, categoryController.createCategory);
+router.post("/", middleware.singleUpload, categoryController.createCategory);
 router.get("/", categoryController.allCategories);
 
 router.get("/:id", categoryController.singleCategory);
