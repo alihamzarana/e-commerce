@@ -6,7 +6,7 @@ const productRoute = require("./routes/productRoute");
 const categoryRoute = require("./routes/categoryRoute");
 const adminRoute = require("./routes/adminRoute");
 // const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-const stripeRoute = require("./routes/stripe");
+const stripeRoute = require("./routes/stripeRoute");
 
 require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` });
 

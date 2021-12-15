@@ -13,11 +13,11 @@ router.get("/:id", categoryController.singleCategory);
 router.delete("/:id", categoryController.deleteCategory);
 router.put("/:id", middleware.upload, categoryController.updateCategory);
 
-router.put(
-  "/subcategory/:id",
-  middleware.singleUpload,
-  categoryController.createSubCategory
-);
+// router.put(
+//   "/subcategory/:id",
+//   middleware.singleUpload,
+//   categoryController.createSubCategory
+// );
 router.put(
   "/:id/subcategory",
   middleware.singleUpload,

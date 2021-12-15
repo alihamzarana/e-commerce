@@ -1,7 +1,8 @@
 const Category = require("../models/category");
 const categoryService = require("../services/categoryService");
 const utils = require("../utils/fileUpload");
-const cloudinary = require("../middleware/cloudinary");
+let cloudinary = require("../middleware/cloudinary");
+// const middleware = require("../middleware/multer");
 
 const allCategories = async (req, res) => {
   try {
@@ -29,19 +30,61 @@ const allCategories = async (req, res) => {
 const createCategory = async (req, res) => {
   try {
     console.log("body request", req.body);
-    console.log("files request", req.files);
+    console.log("sub category request", req.body.subCategory);
+
+    console.log("image request", req.file);
+    // console.log("files request", req.files);
     // console.log("body request", req.body);
     // const uploadImage = req.file?.filename
     //   ? await cloudinary.uploader.upload(req.file.path)
     //   : null;
-    const imagesUrl = await utils.imageUploader(req.files);
+    // const imagesUrl = await utils.cloudinaryUploader(req.file);
+    // console.log("image request", imagesUrl);
+    let uploadImage = req.file?.filename
+      ? await cloudinary.uploader.upload(req.file.path)
+      : null;
 
-    // console.log("uploaded image", uploadImage);
+    console.log("upload image of category", uploadImage);
+    // if (req.body.subCategory) {
+    // }
+    // let subCategoryData = req.body.subCategory
+    //   ? req.body.subCategory.map((elem) => {
+    //       return elem;
+    //     })
+    //   : [];
+    // let subCategoryData = req.body.subCategory
+    //   ? await Promise.all(
+    //       req.body.subCategory?.map((elem) => {
+    //         // console.log("subCategoryData0", elem);
+    //         // return (elem.image = uploadImage?.url ? uploadImage.url : null);
+    //         return elem;
+
+    //         // if (elem.image) {
+    //         //   let uploadedImage = req.file?.filename
+    //         //     ? cloudinary.uploader.upload(req.file.path)
+    //         //     : null;
+    //         //   // console.log("uplodaed image", uploadedImage);
+    //         //   elem.image = uploadedImage?.url ? uploadedImage.url : null;
+
+    //         //   return { ...elem, ...elem.image };
+    //         // } else {
+    //         //   ;
+    //         // }
+    //       })
+    //     )
+    //   : [];
+
+    console.log("uploaded image", uploadImage);
     const categoryData = {
       title: req.body.title,
+      image: uploadImage?.url ? uploadImage.url : null,
       description: req.body.description,
-      image: imagesUrl ? imagesUrl : [],
+      subCategory: req.body.subCategory,
     };
+
+    // console.log("category data", categoryData);
+
+    // console.log("subcategory data", subCategoryData);
 
     // console.log("sub category", req.body.subCategory)
     // const result = await Category.create(categoryData);
@@ -77,13 +120,17 @@ const updateCategory = async (req, res) => {
     console.log("body request", req.body);
     console.log("files request", req.files);
 
-    const imagesUrl = await utils.imageUploader(req.files);
+    // const imagesUrl = await utils.imageUploader(req.files);
+    const uploadImage = req.file?.filename
+      ? await cloudinary.uploader.upload(req.file.path)
+      : null;
 
     // console.log("uploaded image", uploadImage);
     const categoryData = {
       title: req.body.title,
+      image: uploadImage?.url ? uploadImage.url : null,
       description: req.body.description,
-      image: imagesUrl ? imagesUrl : [],
+      subCategory: req.body.subCategory,
     };
     if (categoryData.image == null) {
       delete categoryData.image;
@@ -166,45 +213,45 @@ const deleteCategory = async (req, res) => {
   }
 };
 
-const createSubCategory = async (req, res) => {
-  try {
-    console.log("sub category", req.body);
-    console.log("image request", req.file);
-    // const imagesUrl = await utils.imageUploader(req.files);
-    const uploadImage = req.file?.filename
-      ? await cloudinary.uploader.upload(req.file.path)
-      : null;
+// const createSubCategory = async (req, res) => {
+//   try {
+//     console.log("sub category", req.body);
+//     console.log("image request", req.file);
+//     // const imagesUrl = await utils.imageUploader(req.files);
+//     const uploadImage = req.file?.filename
+//       ? await cloudinary.uploader.upload(req.file.path)
+//       : null;
 
-    console.log("uploaded image", uploadImage);
-    const categoryData = {
-      title: req.body.title,
-      description: req.body.description,
-      image: uploadImage?.url ? uploadImage.url : null,
-    };
-    console.log("category data", categoryData);
+//     console.log("uploaded image", uploadImage);
+//     const categoryData = {
+//       title: req.body.title,
+//       description: req.body.description,
+//       image: uploadImage?.url ? uploadImage.url : null,
+//     };
+//     console.log("category data", categoryData);
 
-    const result = await Category.findByIdAndUpdate(
-      { _id: req.params.id },
-      { $push: { subCategory: categoryData } }
-    );
-    console.log("created sub category", result);
+//     const result = await Category.findByIdAndUpdate(
+//       { _id: req.params.id },
+//       { $push: { subCategory: categoryData } }
+//     );
+//     console.log("created sub category", result);
 
-    if (result) {
-      res.json({
-        status: "success",
-        message: "subCategory created successfully",
-        data: result,
-      });
-    } else {
-      res.json({
-        status: "error",
-        message: "category not created",
-      });
-    }
-  } catch (error) {
-    throw error;
-  }
-};
+//     if (result) {
+//       res.json({
+//         status: "success",
+//         message: "subCategory created successfully",
+//         data: result,
+//       });
+//     } else {
+//       res.json({
+//         status: "error",
+//         message: "category not created",
+//       });
+//     }
+//   } catch (error) {
+//     throw error;
+//   }
+// };
 
 const editSubCategory = async (req, res) => {
   try {
@@ -213,15 +260,15 @@ const editSubCategory = async (req, res) => {
     console.log("body request", req.body);
     console.log("image request", req.file);
     // const imagesUrl = await utils.imageUploader(req.files);
-    const uploadImage = req.file?.filename
-      ? await cloudinary.uploader.upload(req.file.path)
-      : null;
+    // const uploadImage = req.file?.filename
+    //   ? await cloudinary.uploader.upload(req.file.path)
+    //   : null;
 
     console.log("uploaded image", uploadImage);
-    const categoryData = {
+    const updatedSubCategoryData = {
       title: req.body.title,
       description: req.body.description,
-      image: uploadImage?.url ? uploadImage.url : null,
+      // image: uploadImage?.url ? uploadImage.url : null,
     };
 
     let category = await Category.findOne({ _id: req.params.id });
@@ -300,7 +347,7 @@ module.exports = {
   allCategories,
   updateCategory,
   singleCategory,
-  createSubCategory,
+  // createSubCategory,
   editSubCategory,
   deleteSubCategory,
 };

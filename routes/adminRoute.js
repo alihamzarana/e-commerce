@@ -14,7 +14,7 @@ router.post(
 router.get("/product", middleware.authenticate, productController.allProducts);
 router.post(
   "/category",
-  [middleware.authenticate, middleware.upload],
+  [middleware.authenticate, middleware.singleUpload],
   categoryController.createCategory
 );
 router.get(
@@ -57,11 +57,11 @@ router.put(
   [middleware.authenticate, middleware.upload],
   categoryController.updateCategory
 );
-router.put(
-  "/category/subcategory/:id",
-  [middleware.authenticate, middleware.singleUpload],
-  categoryController.createSubCategory
-);
+// router.put(
+//   "/category/subcategory/:id",
+//   [middleware.authenticate, middleware.singleUpload],
+//   categoryController.createSubCategory
+// );
 router.delete(
   "/category/subcategory/:id",
   middleware.authenticate,
