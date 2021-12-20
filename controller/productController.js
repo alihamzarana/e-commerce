@@ -105,7 +105,7 @@ const updateProduct = async (req, res) => {
     // for (let x = 0; x < image.length; x++) {
 
     // }
-    image.forEach((elem) => {
+    image?.forEach((elem) => {
       if (elem.startsWith("https")) {
         imagesUrl.push(elem);
       }
