@@ -22,11 +22,11 @@ const categorySchema = new Schema(
       {
         title: {
           type: String,
-          required: true,
+          required: false,
         },
         description: {
           type: String,
-          required: true,
+          required: false,
         },
 
         image: {
