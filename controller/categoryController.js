@@ -30,7 +30,7 @@ const allCategories = async (req, res) => {
 const createCategory = async (req, res) => {
   try {
     console.log("body request", req.body);
-    console.log("sub category request", req.body.subCategory);
+    console.log("sub category request", JSON.parse(req.body.subCategory));
 
     console.log("image request", req.file);
     // console.log("files request", req.files);
@@ -79,7 +79,7 @@ const createCategory = async (req, res) => {
       title: req.body.title,
       image: uploadImage?.url ? uploadImage.url : null,
       description: req.body.description,
-      subCategory: req.body.subCategory,
+      subCategory: JSON.parse(req.body.subCategory),
     };
 
     // console.log("category data", categoryData);
