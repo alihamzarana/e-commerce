@@ -125,12 +125,11 @@ const updateCategory = async (req, res) => {
       ? await cloudinary.uploader.upload(req.file.path)
       : null;
 
-    // console.log("uploaded image", uploadImage);
     const categoryData = {
       title: req.body.title,
       image: uploadImage?.url ? uploadImage.url : null,
       description: req.body.description,
-      subCategory: req.body.subCategory,
+      subCategory: JSON.parse(req.body.subCategory),
     };
     if (categoryData.image == null) {
       delete categoryData.image;
