@@ -118,18 +118,19 @@ const createCategory = async (req, res) => {
 const updateCategory = async (req, res) => {
   try {
     console.log("body request", req.body);
-    console.log("files request", req.files);
+    console.log("files request", req.file);
 
     // const imagesUrl = await utils.imageUploader(req.files);
     const uploadImage = req.file?.filename
       ? await cloudinary.uploader.upload(req.file.path)
       : null;
+      console.log("updated image", uploadImage)
 
     const categoryData = {
       title: req.body.title,
       image: uploadImage?.url ? uploadImage.url : null,
       description: req.body.description,
-      subCategory: JSON.parse(req.body.subCategory),
+      subCategory: req.body.subCategory? JSON.parse(req.body.subCategory) : [],
     };
     if (categoryData.image == null) {
       delete categoryData.image;

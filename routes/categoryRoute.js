@@ -11,7 +11,7 @@ router.get("/", categoryController.allCategories);
 
 router.get("/:id", categoryController.singleCategory);
 router.delete("/:id", categoryController.deleteCategory);
-router.put("/:id", middleware.upload, categoryController.updateCategory);
+router.put("/:id",  middleware.singleUpload, categoryController.updateCategory);
 
 // router.put(
 //   "/subcategory/:id",
